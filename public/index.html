@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Carpet | Custom Orders</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-dark: #5e2f0d;
+            --accent: #DAA520;
+            --bg-light: #FDFBF7;
+            --text-dark: #2C2C2C;
+            --text-light: #FFFFFF;
+            --gray-light: #E0E0E0;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --card-radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--primary-dark); }
+
+        /* Components */
+        .btn {
+            padding: 10px 24px; border-radius: 6px; border: none; cursor: pointer;
+            font-weight: 700; transition: all 0.3s; font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-accent { background: var(--accent); color: var(--text-dark); }
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 0.85rem; }
+        .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); }
+        
+        input, select, textarea {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;
+            font-size: 1rem; margin-bottom: 10px; font-family: inherit;
+        }
+        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+        .hidden { display: none !important; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; flex: 1; }
+
+        /* Navigation */
+        header { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; padding: 15px 20px; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        nav ul { display: flex; list-style: none; gap: 20px; }
+        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; cursor: pointer; }
+        nav a:hover { color: var(--primary); }
+        
+        footer { background: #333; color: #888; text-align: center; padding: 20px; margin-top: auto; }
+        footer a { color: #555; text-decoration: none; font-size: 0.8rem; }
+        footer a:hover { color: #aaa; }
+
+        /* Views */
+        .order-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; }
+        @media (max-width: 768px) { .order-layout { grid-template-columns: 1fr; } }
+
+        /* Design Gallery */
+        .design-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 10px; }
+        .design-card { background: white; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 2px solid transparent; transition: var(--transition); }
+        .design-card:hover { transform: translateY(-3px); }
+        .design-card.selected { border-color: var(--accent); }
+        .design-card img { width: 100%; height: 150px; object-fit: cover; }
+        .design-info { padding: 10px; text-align: center; font-size: 0.9rem; font-weight: 700; }
+
+        /* Cart */
+        .cart-item-row { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: var(--shadow); display: grid; grid-template-columns: 80px 1fr auto; gap: 15px; align-items: center; }
+        .cart-item-thumb { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
+        .size-inputs { display: flex; gap: 10px; margin-top: 5px; }
+
+        /* Delivery */
+        .delivery-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .delivery-card { background: white; border: 1px solid var(--gray-light); border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; }
+        .delivery-card.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Payment Page */
+        .payment-center { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
+        .payment-methods { display: flex; gap: 10px; margin-bottom: 20px; }
+        .payment-method-btn { flex: 1; padding: 15px; border: 1px solid var(--gray-light); border-radius: 8px; background: white; cursor: pointer; font-weight: bold; }
+        .payment-method-btn.active { border-color: var(--primary); background-color: #fff5e6; color: var(--primary); }
+        .sim-card { background: linear-gradient(135deg, #8B4513, #5e2f0d); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .sim-logo { font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; }
+
+        /* Admin Login */
+        .login-wrapper { display: flex; align-items: center; justify-content: center; height: 80vh; }
+        .login-box { background: white; padding: 40px; border-radius: var(--card-radius); box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center; }
+
+        /* Admin Dashboard */
+        .admin-dashboard { background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
+        .admin-tabs { display: flex; border-bottom: 2px solid var(--gray-light); margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; font-weight: bold; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-light); }
+        .data-table th { background-color: #f9f9f9; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+        .badge-pending { background-color: #ffeeba; color: #856404; }
+        .badge-paid { background-color: #d4edda; color: #155724; }
+
+        /* Notifications */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 4px; padding: 16px; position: fixed;
+            z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%);
+            font-size: 17px; opacity: 0; transition: opacity 0.5s, bottom 0.5s;
+        }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+        /* Notification Simulation Modal */
+        .notif-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000; display: none;
+            align-items: center; justify-content: center;
+        }
+        .notif-content {
+            background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .notif-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="navigateTo('home')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                EliteCarpet<span>.uz</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a onclick="navigateTo('home')" id="nav-home" class="active">Order New</a></li>
+                    <li><a onclick="navigateTo('payment')" id="nav-payment">Pay Order</a></li>
+                    <!-- Admin link removed from public nav -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- 1. HOME / ORDER PAGE -->
+        <section id="view-home">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h1>Create Your Perfect Carpet</h1>
+                <p>Select a design, specify dimensions, and choose delivery.</p>
+            </div>
+
+            <div class="order-layout">
+                <div class="design-selection">
+                    <h3>1. Select Design</h3>
+                    <div class="design-gallery" id="design-gallery"></div>
+                </div>
+
+                <div class="order-form">
+                    <h3>2. Your Carpet(s)</h3>
+                    <div id="cart-container" class="cart-items">
+                        <div style="text-align: center; padding: 30px; color: #888; border: 2px dashed #ccc; border-radius: 8px;">
+                            No items selected.
+                        </div>
+                    </div>
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 20px; border-style: dashed;" onclick="addMoreItems()">+ Add Another Carpet</button>
+
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+
+                    <h3>3. Delivery</h3>
+                    <div class="delivery-options">
+                        <div class="delivery-card" onclick="selectDelivery('BTS', this)"><strong>BTS</strong></div>
+                        <div class="delivery-card" onclick="selectDelivery('EMU', this)"><strong>EMU</strong></div>
+                        <div class="delivery-card" onclick="selectDelivery('TAXI', this)"><strong>TAXI</strong></div>
+                    </div>
+
+                    <h3>4. Address</h3>
+                    <textarea id="delivery-address" rows="3" placeholder="Enter your full address..."></textarea>
+
+                    <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                            <span>Estimated Total:</span>
+                            <span id="total-price-display">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;" onclick="submitOrder()">Send Order</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 2. PAYMENT PAGE -->
+        <section id="view-payment" class="hidden">
+            <div class="payment-center">
+                <h2 style="text-align: center; margin-bottom: 20px;">Pay for Order</h2>
+                <div class="payment-methods">
+                    <button class="payment-method-btn active" onclick="switchPaymentMethod('click')">CLICK</button>
+                    <button class="payment-method-btn" onclick="switchPaymentMethod('card')">BANK CARD</button>
+                </div>
+
+                <form onsubmit="processPayment(event)">
+                    <label>Order ID or Phone</label>
+                    <input type="text" placeholder="e.g. 12345" required>
+                    <label>Amount (UZS)</label>
+                    <input type="number" placeholder="Amount" required>
+
+                    <div id="ui-click">
+                        <div class="sim-card">
+                            <div class="sim-logo">CLICK</div>
+                            <input type="text" placeholder="Card Number" style="background: rgba(255,255,255,0.9);">
+                            <input type="text" placeholder="Phone" style="background: rgba(255,255,255,0.9);">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Pay Now</button>
+                    </div>
+                    <div id="ui-card" class="hidden">
+                        <div class="sim-card" style="background: linear-gradient(135deg, #2c3e50, #000);">
+                            <div class="sim-logo">UZCARD / HUMO</div>
+                            <input type="text" placeholder="Card Number" style="background: rgba(255,255,255,0.9);">
+                            <input type="password" placeholder="CVV" style="background: rgba(255,255,255,0.9);">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- 3. ADMIN LOGIN PAGE -->
+        <section id="view-login" class="hidden">
+            <div class="login-wrapper">
+                <div class="login-box">
+                    <h2 style="margin-bottom: 20px;">Admin Access</h2>
+                    <input type="password" id="admin-pass" placeholder="Enter Password">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="checkLogin()">Login</button>
+                    <p style="margin-top: 15px; font-size: 0.8rem; color: #888;">
+                        <a onclick="navigateTo('home')">← Back to Site</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 4. ADMIN DASHBOARD -->
+        <section id="view-admin" class="hidden">
+            <div class="admin-dashboard">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Admin Dashboard</h2>
+                    <button class="btn btn-outline" onclick="logout()">Logout</button>
+                </div>
+
+                <div class="admin-tabs">
+                    <div class="tab-btn active" onclick="switchAdminTab('orders', this)">Orders</div>
+                    <div class="tab-btn" onclick="switchAdminTab('designs', this)">Designs</div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="tab-orders">
+                    <div style="overflow-x: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Details</th>
+                                    <th>Delivery</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Designs Tab -->
+                <div id="tab-designs" class="hidden">
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4>Add New Design</h4>
+                        <form onsubmit="addNewDesign(event)" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                            <input type="text" name="d_name" placeholder="Name" required style="flex: 1;">
+                            <input type="number" name="d_price" placeholder="Price/m²" required style="width: 120px;">
+                            <input type="text" name="d_img" placeholder="Image URL" required style="flex: 2;">
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </form>
+                    </div>
+                    <table class="data-table">
+                        <thead><tr><th>Preview</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
+                        <tbody id="designs-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Hidden Link for Admin Login -->
+    <footer>
+        <p>&copy; 2023 Elite Carpet Uzbekistan. All rights reserved.</p>
+        <a onclick="navigateTo('login')">Admin Login</a>
+    </footer>
+
+    <!-- TOAST -->
+    <div id="toast">Message</div>
+
+    <!-- NOTIFICATION SIMULATION MODAL -->
+    <div id="notif-modal" class="notif-modal">
+        <div class="notif-content">
+            <span class="notif-icon">📩</span>
+            <h3>Notification Sent!</h3>
+            <p style="margin-bottom: 20px;">Order status updated to Paid. Client notified via SMS and Telegram.</p>
+            <button class="btn btn-primary" onclick="closeNotifModal()">Okay</button>
+        </div>
+    </div>
+
+    <script>
+            // --- CONFIGURATION ---
+    // REPLACE 'YOUR_BOT_USERNAME' with your actual bot username (e.g., 'EliteCarpetBot')
+    const BOT_USERNAME = 'adgilamchexolbot'; 
+    let currentTelegramUser = null; // Stores logged in user info
+    let cart = [];
+    let selectedDelivery = null;
+    
+    // Local designs (You could also fetch this from server later)
+    const designs = [
+        { id: 1, name: "Oriental Classic", price: 50, img: "https://picsum.photos/seed/rug1/300/300" },
+        { id: 2, name: "Modern Geometric", price: 45, img: "https://picsum.photos/seed/rug2/300/300" },
+        { id: 3, name: "Persian Red", price: 60, img: "https://picsum.photos/seed/rug3/300/300" },
+        { id: 4, name: "Blue Silk", price: 85, img: "https://picsum.photos/seed/rug4/300/300" },
+    ];
+
+    // --- 1. TELEGRAM LOGIN CALLBACK ---
+    // This function runs automatically when the user clicks the Telegram button
+    function onTelegramAuth(user) {
+        currentTelegramUser = user;
+        document.getElementById('telegram-login-widget').style.display = 'none';
+        
+        // Show a welcome message in the UI (optional)
+        const header = document.querySelector('header .nav-container');
+        const userSpan = document.createElement('span');
+        userSpan.style.marginLeft = "20px";
+        userSpan.style.fontWeight = "bold";
+        userSpan.innerText = `Hi, ${user.first_name}`;
+        header.appendChild(userSpan);
+
+        showToast(`Logged in as ${user.first_name}`);
+    }
+
+    // --- NAVIGATION (Keep mostly the same) ---
+    function navigateTo(page) {
+        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(`view-${page}`).classList.remove('hidden');
+
+        if (page === 'admin') {
+            loadAdminOrdersFromServer(); // NEW: Fetch real orders
+        }
+    }
+
+    // --- ORDER LOGIC (Keep mostly same) ---
+    function renderDesigns() { /* Keep your existing renderDesigns code */ 
+        const container = document.getElementById('design-gallery');
+        container.innerHTML = designs.map(d => `
+            <div class="design-card" onclick="selectDesign(${d.id})">
+                <img src="${d.img}" alt="${d.name}">
+                <div class="design-info">${d.name}<br><small>$${d.price}/m²</small></div>
+            </div>
+        `).join('');
+    }
+
+    function selectDesign(id) {
+        cart.push({ uid: Date.now(), designId: id, width: 2, height: 3 });
+        renderCart();
+    }
+
+    function renderCart() { /* Keep your existing renderCart code, but calculate total */
+        const container = document.getElementById('cart-container');
+        if (cart.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 30px; color: #888;">No items selected.</div>';
+            document.getElementById('total-price-display').innerText = "$0.00";
+            return;
+        }
+        let total = 0;
+        container.innerHTML = cart.map((item, index) => {
+            const d = designs.find(x => x.id === item.designId);
+            const price = item.width * item.height * d.price;
+            total += price;
+            return `
+                <div class="cart-item-row">
+                    <img src="${d.img}" class="cart-item-thumb">
+                    <div>
+                        <strong>${d.name}</strong>
+                        <div class="size-inputs">
+                            <input type="number" min="0.5" step="0.1" value="${item.width}" onchange="updateItem(${index}, 'w', this.value)"> x
+                            <input type="number" min="0.5" step="0.1" value="${item.height}" onchange="updateItem(${index}, 'h', this.value)">
+                        </div>
+                        <small>$${price.toFixed(0)}</small>
+                    </div>
+                    <button class="btn btn-danger" onclick="removeItem(${index})">×</button>
+                </div>`;
+        }).join('');
+        document.getElementById('total-price-display').innerText = "$" + total.toFixed(2);
+    }
+
+    function updateItem(index, dim, val) {
+        if(dim === 'w') cart[index].width = parseFloat(val);
+        if(dim === 'h') cart[index].height = parseFloat(val);
+        renderCart();
+    }
+    function removeItem(index) { cart.splice(index, 1); renderCart(); }
+    function selectDelivery(type, el) {
+        selectedDelivery = type;
+        document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    // --- SUBMIT ORDER (UPDATED) ---
+    async function submitOrder() {
+        // 1. Check Login
+        if (!currentTelegramUser) {
+            alert("Please log in using Telegram to order!");
+            window.scrollTo(0, 0);
+            document.getElementById('telegram-login-widget').style.border = "2px solid red";
+            return;
+        }
+
+        if (cart.length === 0) return showToast("Select items first.");
+        if (!selectedDelivery) return showToast("Select delivery.");
+        const address = document.getElementById('delivery-address').value;
+        if (!address) return showToast("Enter address.");
+
+        const total = cart.reduce((sum, i) => {
+            const d = designs.find(x => x.id === i.designId);
+            return sum + (i.width * i.height * d.price);
+        }, 0);
+
+        const payload = {
+            cart: cart,
+            address: address,
+            total: total,
+            delivery: selectedDelivery,
+            telegramUser: currentTelegramUser // CRITICAL: Send user data to server
+        };
+
+        try {
+            showToast("Sending Order...");
+            const response = await fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                cart = []; selectedDelivery = null;
+                document.getElementById('delivery-address').value = "";
+                renderCart();
+                showToast("Order Sent! Check your Telegram.");
+            } else {
+                showToast("Error sending order");
+            }
+        } catch (error) {
+            console.error(error);
+            showToast("Server Error");
+        }
+    }
+
+    // --- ADMIN LOGIC (UPDATED) ---
+    async function loadAdminOrdersFromServer() {
+        try {
+            const res = await fetch('/api/orders');
+            const orders = await res.json();
+            renderAdminOrders(orders);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderAdminOrders(orders) {
+        const tbody = document.getElementById('orders-table-body');
+        if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No orders yet.</td></tr>'; return; }
+        
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td>#${o.id}</td>
+                <td>
+                    <strong>${o.user.first_name}</strong> (@${o.user.username || '-'})<br>
+                    <small>${o.address}</small>
+                </td>
+                <td>${o.delivery}</td>
+                <td>$${o.total}</td>
+                <td><span class="badge ${o.status === 'Pending' ? 'badge-pending' : 'badge-paid'}">${o.status}</span></td>
+                <td>
+                    ${o.status === 'Pending' 
+                        ? `<button class="btn btn-primary" onclick="updateOrderStatus(${o.id}, 'Paid')">Mark Paid</button>` 
+                        : `<button class="btn btn-outline" style="font-size:0.7rem" onclick="updateOrderStatus(${o.id}, 'Shipped')">Ship</button>`
+                    }
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function updateOrderStatus(id, status) {
+        try {
+            const res = await fetch('/api/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: id, status: status })
+            });
+            const data = await res.json();
+            if(data.success) {
+                loadAdminOrdersFromServer(); // Refresh table
+                showToast(`Order marked as ${status}`);
+                // Simulate the visual notification modal
+                if(status === 'Paid') showNotificationModal(); 
+            }
+        } catch (e) {
+            showToast("Error updating status");
+        }
+    }
+
+    // Keep other helper functions (showToast, etc) as they were...
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.className = "show";
+        setTimeout(() => t.className = t.className.replace("show", ""), 3000);
+    }
+
+    function showNotificationModal() {
+        document.getElementById('notif-modal').style.display = 'flex';
+    }
+    
+    function closeNotifModal() {
+        document.getElementById('notif-modal').style.display = 'none';
+    }
+    
+    // Keep Auth functions...
+    function checkLogin() {
+        const pass = document.getElementById('admin-pass').value;
+        if (pass === 'admin123') navigateTo('admin');
+        else showToast("Wrong password");
+    }
+
+    // Init
+    renderDesigns();
+    renderCart();
+    </script>
+</body>
+</html>
