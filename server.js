@@ -134,4 +134,4 @@ app.listen(PORT, () => {
 });
 
 // Start Telegram Bot Polling
-bot.launch();
+//bot.launch();
