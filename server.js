@@ -1,138 +1,143 @@
 const express = require('express');
 const { Telegraf } = require('telegraf');
 const bodyParser = require('body-parser');
-const fs = require('fs');
+const { Pool } = require('pg'); // This is the Postgres driver
 
 // --- CONFIGURATION ---
 const PORT = process.env.PORT || 3000;
 
-// Read from Environment Variables (defined in render.yaml)
+// 1. Bot Token (from Environment Variable)
 const TOKEN = process.env.BOT_TOKEN; 
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
-const DATABASE_URL = process.env.DATABASE_URL;
 
-// (Keep the rest of your server.js code the same below this...)
+// 2. Database Connection (from Environment Variable)
+// We use 'rejectUnauthorized: false' because Render uses SSL
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
+
 const bot = new Telegraf(TOKEN);
 const app = express();
-// ... rest of code
 
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serves your HTML file
+app.use(express.static('public'));
 
-// --- DATABASE (JSON FILE) ---
-const DB_FILE = 'database.json';
-
-// Helper to read orders
-function getOrders() {
-    if (!fs.existsSync(DB_FILE)) return [];
+// --- DATABASE SETUP ---
+// This runs when the server starts to make sure the 'orders' table exists
+async function initDB() {
     try {
-        const data = fs.readFileSync(DB_FILE);
-        return JSON.parse(data);
-    } catch (e) {
-        return [];
+        const query = `
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                total NUMERIC,
+                status VARCHAR(50) DEFAULT 'Pending',
+                delivery VARCHAR(50),
+                address TEXT,
+                cart JSONB, -- Stores the array of carpets
+                user_id BIGINT,
+                user_name VARCHAR(255),
+                user_username VARCHAR(255)
+            );
+        `;
+        await pool.query(query);
+        console.log("Database table 'orders' is ready.");
+    } catch (err) {
+        console.error("Database init error:", err);
     }
 }
 
-// Helper to save orders
-function saveOrders(orders) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(orders, null, 2));
-}
+// --- ROUTES ---
 
-// --- WEBSITE ROUTES ---
-
-// 1. API: GET all orders (For Admin Dashboard)
-app.get('/api/orders', (req, res) => {
-    const orders = getOrders();
-    res.json(orders);
+// 1. GET: Fetch all orders for Admin
+app.get('/api/orders', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+    }
 });
 
-// 2. API: Receive New Order
-app.post('/api/order', (req, res) => {
+// 2. POST: Create New Order
+app.post('/api/order', async (req, res) => {
     const { cart, address, total, delivery, telegramUser } = req.body;
-    
-    const orders = getOrders();
-    const newOrder = {
-        id: Date.now(), // Unique ID based on timestamp
-        date: new Date().toISOString(),
-        cart,
-        address,
-        total,
-        delivery,
-        status: 'Pending',
-        // Store the user's Telegram ID and Name
-        user: {
-            id: telegramUser.id,
-            first_name: telegramUser.first_name,
-            username: telegramUser.username
+
+    try {
+        const query = `
+            INSERT INTO orders (cart, address, total, delivery, user_id, user_name, user_username)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id;
+        `;
+        const values = [
+            JSON.stringify(cart), // Store cart as JSONB
+            address,
+            total,
+            delivery,
+            telegramUser.id,
+            telegramUser.first_name,
+            telegramUser.username
+        ];
+
+        const result = await pool.query(query, values);
+        const orderId = result.rows[0].id;
+
+        // 1. Notify Admin
+        if (ADMIN_CHAT_ID) {
+            bot.telegram.sendMessage(ADMIN_CHAT_ID, 
+                `🛍 NEW ORDER! #${orderId}\n` +
+                `Client: ${telegramUser.first_name} (@${telegramUser.username || 'no username'})\n` +
+                `Total: $${total}\nDelivery: ${delivery}\nAddress: ${address}`
+            ).catch(e => console.log("Admin notify failed"));
         }
-    };
 
-    orders.push(newOrder);
-    saveOrders(orders);
-    
-    // 1. Notify Admin
-    bot.telegram.sendMessage(ADMIN_CHAT_ID, 
-        `🛍 NEW ORDER! #${newOrder.id}\n` +
-        `Client: ${newOrder.user.first_name} (@${newOrder.user.username || 'no username'})\n` +
-        `Total: $${total}\nDelivery: ${delivery}\nAddress: ${address}`
-    ).catch(e => console.log("Admin notification failed (check ADMIN_CHAT_ID)"));
+        // 2. Notify User
+        bot.telegram.sendMessage(telegramUser.id, 
+            `✅ Order Received!\n` +
+            `Hello ${telegramUser.first_name}, we received your order for $${total}.\n` +
+            `Order ID: #${orderId}\n` +
+            `We will notify you when it is shipped.`
+        ).catch(e => console.log("User notify failed"));
 
-    // 2. Notify User
-    bot.telegram.sendMessage(newOrder.user.id, 
-        `✅ Order Received!\n` +
-        `Hello ${newOrder.user.first_name}, we received your order for $${total}.\n` +
-        `Order ID: #${newOrder.id}\n` +
-        `We will notify you when payment is confirmed.`
-    ).catch(e => console.log("User notification failed (user might have blocked bot)"));
-    
-    res.json({ success: true, orderId: newOrder.id });
+        res.json({ success: true, orderId });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
 });
 
-// 3. API: Update Order Status (For Admin Dashboard)
-app.post('/api/update-status', (req, res) => {
+// 3. POST: Update Order Status
+app.post('/api/update-status', async (req, res) => {
     const { orderId, status } = req.body;
-    const orders = getOrders();
-    const orderIndex = orders.findIndex(o => o.id == orderId);
 
-    if (orderIndex > -1) {
-        const oldStatus = orders[orderIndex].status;
-        orders[orderIndex].status = status;
-        saveOrders(orders);
+    try {
+        const query = 'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *;';
+        const result = await pool.query(query, [status, orderId]);
+        const order = result.rows[0];
 
-        // Notify User about status change
-        let message = "";
-        if (status === 'Paid') {
-            message = `💳 PAYMENT CONFIRMED\nYour order #${orderId} is marked as PAID. We are starting production!`;
-        } else if (status === 'Shipped') {
-            message = `🚚 SHIPPED\nYour order #${orderId} is on its way via ${orders[orderIndex].delivery}.`;
-        }
-
-        if (message) {
-            bot.telegram.sendMessage(orders[orderIndex].user.id, message)
-                .catch(e => console.log("Error notifying user"));
+        if (order && status === 'Shipped') {
+            // Notify User
+            bot.telegram.sendMessage(order.user_id, 
+                `🚚 SHIPPED\nYour order #${order.id} is on its way via ${order.delivery}.`
+            ).catch(e => console.log("Notify error"));
         }
 
         res.json({ success: true });
-    } else {
-        res.status(404).json({ success: false, message: "Order not found" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
     }
 });
 
-// --- TELEGRAM BOT COMMANDS ---
-bot.start((ctx) => ctx.reply('Welcome to Elite Carpet Bot! Visit our website to order.'));
-bot.command('myorders', (ctx) => {
-    // Simple check to see if user has orders
-    const orders = getOrders();
-    const userOrders = orders.filter(o => o.user.id === ctx.from.id);
-    if(userOrders.length === 0) return ctx.reply("You have no orders yet.");
-    // Send a summary (kept brief)
-    ctx.reply(`You have ${userOrders.length} orders. Check the website for details.`);
-});
+// --- STARTUP ---
+(async () => {
+    await initDB(); // Initialize DB tables
+    
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 
-// Start Express Server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
-// Start Telegram Bot Polling
-//bot.launch();
+    bot.launch();
+})();
