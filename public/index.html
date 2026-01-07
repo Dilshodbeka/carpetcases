@@ -7,134 +7,150 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     
-    <style>
-        :root {
-            --primary: #8B4513;
-            --primary-dark: #5e2f0d;
-            --accent: #DAA520;
-            --bg-light: #FDFBF7;
-            --text-dark: #2C2C2C;
-            --text-light: #FFFFFF;
-            --gray-light: #E0E0E0;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --card-radius: 12px;
-        }
+<style>
+    :root {
+        --primary: #8B4513;
+        --primary-dark: #5e2f0d;
+        --accent: #DAA520;
+        --bg-light: #FDFBF7;
+        --text-dark: #2C2C2C;
+        --text-light: #FFFFFF;
+        --gray-light: #E0E0E0;
+        --success: #27ae60;
+        --danger: #c0392b;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --card-radius: 12px;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+        font-family: 'Lato', sans-serif;
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-size: 16px; /* Better for mobile reading */
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--primary-dark); }
+
+    /* --- COMPONENTS --- */
+    .btn {
+        padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer;
+        font-weight: 700; transition: all 0.3s; font-size: 1rem;
+        display: inline-block; text-align: center;
+    }
+    .btn-primary { background: var(--primary); color: white; width: 100%; } /* Full width on mobile by default */
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-accent { background: var(--accent); color: var(--text-dark); }
+    .btn-danger { background: var(--danger); color: white; padding: 8px 16px; font-size: 0.9rem; width: auto; }
+    .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); width: 100%; }
+    
+    /* Touch Friendly Inputs */
+    input, select, textarea {
+        width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px;
+        font-size: 16px; margin-bottom: 12px; font-family: inherit; /* 16px prevents zoom on iOS */
+    }
+    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+
+    .hidden { display: none !important; }
+    .container { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 20px; /* Add padding so text doesn't touch screen edges */
+        flex: 1; 
+    }
+
+    /* --- HEADER --- */
+    header { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+    .nav-container { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 15px 20px; 
+        flex-wrap: wrap; /* Allows wrapping on small screens */
+        gap: 10px;
+    }
+    .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    nav ul { display: flex; list-style: none; gap: 15px; }
+    nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+    nav a:hover { color: var(--primary); }
+    
+    footer { background: #333; color: #888; text-align: center; padding: 20px; margin-top: auto; }
+    footer a { color: #555; text-decoration: none; font-size: 0.8rem; }
+
+    /* --- VIEWS --- */
+    /* Responsive Layout: 2 Columns on Desktop, 1 on Mobile */
+    .order-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; }
+    
+    /* Responsive Design Gallery */
+    .design-gallery { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+        gap: 15px; 
+    }
+    .design-card { background: white; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+    .design-card:hover { transform: translateY(-3px); }
+    .design-card.selected { border-color: var(--accent); }
+    .design-card img { width: 100%; height: 160px; object-fit: cover; }
+    .design-info { padding: 12px; text-align: center; font-size: 0.9rem; font-weight: 700; }
+
+    /* Responsive Cart */
+    .cart-item-row { 
+        background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; 
+        box-shadow: var(--shadow); 
+        display: grid; 
+        grid-template-columns: 80px 1fr auto; 
+        gap: 15px; 
+        align-items: center; 
+    }
+    .cart-item-thumb { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
+    .size-inputs { display: flex; gap: 10px; margin-top: 5px; }
+
+    /* Responsive Delivery */
+    .delivery-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .delivery-card { background: white; border: 1px solid var(--gray-light); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; }
+    .delivery-card.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+
+    /* Payment & Admin */
+    .payment-center, .login-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
+    .login-wrapper { display: flex; align-items: center; justify-content: center; height: 80vh; }
+
+    /* --- MEDIA QUERIES (Mobile Optimization) --- */
+    @media (max-width: 768px) {
+        .order-layout { display: block; } /* Stack gallery and form on mobile */
         
-        body {
-            font-family: 'Lato', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--primary-dark); }
-
-        /* Components */
-        .btn {
-            padding: 10px 24px; border-radius: 6px; border: none; cursor: pointer;
-            font-weight: 700; transition: all 0.3s; font-size: 1rem;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-accent { background: var(--accent); color: var(--text-dark); }
-        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 0.85rem; }
-        .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); }
+        .nav-container { flex-direction: column; text-align: center; }
         
-        input, select, textarea {
-            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px;
-            font-size: 1rem; margin-bottom: 10px; font-family: inherit;
-        }
-        input:focus { outline: 2px solid var(--accent); border-color: transparent; }
-
-        .hidden { display: none !important; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; flex: 1; }
-
-        /* Navigation */
-        header { background: white; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; padding: 15px 20px; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        nav ul { display: flex; list-style: none; gap: 20px; }
-        nav a { text-decoration: none; color: var(--text-dark); font-weight: 600; cursor: pointer; }
-        nav a:hover { color: var(--primary); }
+        .delivery-options { grid-template-columns: 1fr; } /* Delivery options stacked */
         
-        footer { background: #333; color: #888; text-align: center; padding: 20px; margin-top: auto; }
-        footer a { color: #555; text-decoration: none; font-size: 0.8rem; }
-        footer a:hover { color: #aaa; }
-
-        /* Views */
-        .order-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; }
-        @media (max-width: 768px) { .order-layout { grid-template-columns: 1fr; } }
-
-        /* Design Gallery */
-        .design-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* Makes nice wide cards */gap: 20px; /* I removed max-height so it expands freely */ }
-        .design-card { background: white; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 2px solid transparent; transition: var(--transition); }
-        .design-card:hover { transform: translateY(-3px); }
-        .design-card.selected { border-color: var(--accent); }
-        .design-card img { width: 100%; height: 150px; object-fit: cover; }
-        .design-info { padding: 10px; text-align: center; font-size: 0.9rem; font-weight: 700; }
-
-        /* Cart */
-        .cart-item-row { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: var(--shadow); display: grid; grid-template-columns: 80px 1fr auto; gap: 15px; align-items: center; }
-        .cart-item-thumb { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
-        .size-inputs { display: flex; gap: 10px; margin-top: 5px; }
-
-        /* Delivery */
-        .delivery-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .delivery-card { background: white; border: 1px solid var(--gray-light); border-radius: 8px; padding: 15px; text-align: center; cursor: pointer; }
-        .delivery-card.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
-
-        /* Payment Page */
-        .payment-center { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
-        .payment-methods { display: flex; gap: 10px; margin-bottom: 20px; }
-        .payment-method-btn { flex: 1; padding: 15px; border: 1px solid var(--gray-light); border-radius: 8px; background: white; cursor: pointer; font-weight: bold; }
-        .payment-method-btn.active { border-color: var(--primary); background-color: #fff5e6; color: var(--primary); }
-        .sim-card { background: linear-gradient(135deg, #8B4513, #5e2f0d); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
-        .sim-logo { font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; }
-
-        /* Admin Login */
-        .login-wrapper { display: flex; align-items: center; justify-content: center; height: 80vh; }
-        .login-box { background: white; padding: 40px; border-radius: var(--card-radius); box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center; }
-
-        /* Admin Dashboard */
-        .admin-dashboard { background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
-        .admin-tabs { display: flex; border-bottom: 2px solid var(--gray-light); margin-bottom: 20px; }
-        .tab-btn { padding: 10px 20px; cursor: pointer; font-weight: bold; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-light); }
-        .data-table th { background-color: #f9f9f9; }
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
-        .badge-pending { background-color: #ffeeba; color: #856404; }
-        .badge-paid { background-color: #d4edda; color: #155724; }
-
-        /* Notifications */
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 4px; padding: 16px; position: fixed;
-            z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%);
-            font-size: 17px; opacity: 0; transition: opacity 0.5s, bottom 0.5s;
+        /* Cart adjustments */
+        .cart-item-row { 
+            grid-template-columns: 1fr; /* Stack cart items on mobile */
+            text-align: center;
         }
-        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .cart-item-thumb { margin: 0 auto; }
+        .size-inputs { justify-content: center; }
+        .btn-danger { margin-top: 10px; width: 100%; } /* Full width delete button */
+        
+        /* Admin Table Scroll */
+        table { font-size: 0.8rem; }
+    }
 
-        /* Notification Simulation Modal */
-        .notif-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 2000; display: none;
-            align-items: center; justify-content: center;
-        }
-        .notif-content {
-            background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px;
-            text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .notif-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
-    </style>
+    /* --- EXTRAS --- */
+    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); opacity: 0; transition: opacity 0.5s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+    /* Modals */
+    .notif-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    .notif-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .notif-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
+</style>
 </head>
 <body>
 
