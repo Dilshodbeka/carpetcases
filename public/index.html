@@ -368,12 +368,7 @@
         let selectedDelivery = null;
         
         // DESIGN DATA (Updated to support Small/Large pricing)
-        const designs = [
-            { id: 1, name: "Oriental Classic", img: "https://picsum.photos/seed/rug1/300/300", smallPrice: 50, largePrice: 45 },
-            { id: 2, name: "Modern Geometric", img: "https://picsum.photos/seed/rug2/300/300", smallPrice: 45, largePrice: 40 },
-            { id: 3, name: "Persian Red", img: "https://picsum.photos/seed/rug3/300/300", smallPrice: 60, largePrice: 55 },
-            { id: 4, name: "Blue Silk", img: "https://picsum.photos/seed/rug4/300/300", smallPrice: 85, largePrice: 80 },
-        ];
+        const designs = [];
 
         // --- 1. TELEGRAM LOGIN & AUTO-LOGIN ---
         function onTelegramAuth(user) {
@@ -444,10 +439,11 @@
         // --- SHOPPING CART LOGIC (Tiers) ---
         function renderDesigns() {
             const container = document.getElementById('design-gallery');
+            if (designs.length === 0) return; // Wait for data
             container.innerHTML = designs.map(d => `
                 <div class="design-card" onclick="selectDesign(${d.id})">
                     <img src="${d.img}" alt="${d.name}">
-                    <div class="design-info">${d.name}<br><small>From $${d.largePrice}/m²</small></div>
+                    <div class="design-info">${d.name}<br><small>From $${d.largeprice}/m²</small></div>
                 </div>
             `).join('');
         }
@@ -531,6 +527,17 @@
         async function loadAdminOrdersFromServer() {
             try { const res = await fetch('/api/orders'); const orders = await res.json(); renderAdminOrders(orders); } catch (e) { console.error(e); }
         }
+        // --- LOAD DESIGNS FROM SERVER ---
+        async function loadDesignsFromServer() {
+            try {
+                const res = await fetch('/api/designs');
+                designs = await res.json(); // Fill the empty array with DB data
+                renderDesigns();       // Update Home Gallery
+                renderAdminDesigns();  // Update Admin List
+            } catch (e) {
+                console.error("Failed to load designs", e);
+            }
+        }
 
         function renderAdminOrders(orders) {
             const tbody = document.getElementById('orders-table-body');
@@ -573,8 +580,8 @@
             document.getElementById('edit-design-id').value = d.id;
             document.getElementById('edit-design-name').value = d.name;
             document.getElementById('edit-design-img').value = d.img;
-            document.getElementById('edit-design-price-small').value = d.smallPrice;
-            document.getElementById('edit-design-price-large').value = d.largePrice;
+            document.getElementById('edit-design-price-small').value = d.smallprice; // Note: lowercase p
+            document.getElementById('edit-design-price-large').value = d.largeprice;
             document.getElementById('design-modal').style.display = 'flex';
             const fileInput = document.getElementById('upload-input'); fileInput.value = "";
             fileInput.onchange = (e) => {
@@ -588,22 +595,32 @@
 
         function saveDesignChanges() {
             const id = parseInt(document.getElementById('edit-design-id').value);
-            const d = designs.find(x => x.id === id);
-            if (d) {
-                d.name = document.getElementById('edit-design-name').value;
-                d.img = document.getElementById('edit-design-img').value;
-                d.smallPrice = parseFloat(document.getElementById('edit-design-price-small').value);
-                d.largePrice = parseFloat(document.getElementById('edit-design-price-large').value);
-                renderAdminDesigns(); renderDesigns(); closeDesignModal(); showToast("Design Updated");
-            }
+            const name = document.getElementById('edit-design-name').value;
+            const img = document.getElementById('edit-design-img').value;
+            const smallPrice = parseFloat(document.getElementById('edit-design-price-small').value);
+            const largePrice = parseFloat(document.getElementById('edit-design-price-large').value);
+
+            fetch('/api/update-design', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name, img, smallPrice, largePrice })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    loadDesignsFromServer(); // Reload from DB
+                    closeDesignModal();
+                    showToast("Design Saved to Database!");
         }
+    });
+}
 
         function closeDesignModal() { document.getElementById('design-modal').style.display = 'none'; }
         function showNotificationModal() { document.getElementById('notif-modal').style.display = 'flex'; }
         function closeNotifModal() { document.getElementById('notif-modal').style.display = 'none'; }
 
         // Init
-        renderDesigns(); renderCart(); renderAdminDesigns(); checkAutoLogin();
+        renderDesigns(); renderCart(); renderAdminDesigns(); checkAutoLogin(); loadDesignsFromServer();
     </script>
 </body>
 </html>

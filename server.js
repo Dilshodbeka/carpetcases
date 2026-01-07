@@ -25,9 +25,11 @@ app.use(express.static('public'));
 
 // --- DATABASE SETUP ---
 // This runs when the server starts to make sure the 'orders' table exists
+// --- DATABASE SETUP ---
 async function initDB() {
     try {
-        const query = `
+        // 1. Create Orders Table
+        const ordersQuery = `
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -35,14 +37,40 @@ async function initDB() {
                 status VARCHAR(50) DEFAULT 'Pending',
                 delivery VARCHAR(50),
                 address TEXT,
-                cart JSONB, -- Stores the array of carpets
+                cart JSONB,
                 user_id BIGINT,
                 user_name VARCHAR(255),
                 user_username VARCHAR(255)
             );
         `;
-        await pool.query(query);
-        console.log("Database table 'orders' is ready.");
+        await pool.query(ordersQuery);
+
+        // 2. Create Designs Table (NEW)
+        const designsQuery = `
+            CREATE TABLE IF NOT EXISTS designs (
+                id INTEGER PRIMARY KEY,
+                name VARCHAR(255),
+                img TEXT,
+                smallPrice NUMERIC,
+                largePrice NUMERIC
+            );
+        `;
+        await pool.query(designsQuery);
+
+        // 3. Seed Initial Designs (Only if table is empty)
+        const checkDesigns = await pool.query('SELECT * FROM designs');
+        if (checkDesigns.rows.length === 0) {
+            console.log("Seeding default designs...");
+            await pool.query(`
+                INSERT INTO designs (id, name, img, smallPrice, largePrice) VALUES 
+                (1, 'Oriental Classic', 'https://picsum.photos/seed/rug1/300/300', 50, 45),
+                (2, 'Modern Geometric', 'https://picsum.photos/seed/rug2/300/300', 45, 40),
+                (3, 'Persian Red', 'https://picsum.photos/seed/rug3/300/300', 60, 55),
+                (4, 'Blue Silk', 'https://picsum.photos/seed/rug4/300/300', 85, 80)
+            `);
+        }
+
+        console.log("Database tables are ready.");
     } catch (err) {
         console.error("Database init error:", err);
     }
@@ -124,6 +152,36 @@ app.post('/api/update-status', async (req, res) => {
             ).catch(e => console.log("Notify error"));
         }
 
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false });
+    }
+});
+
+// --- NEW ROUTES FOR DESIGNS ---
+
+// 1. GET: Fetch Designs
+app.get('/api/designs', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM designs ORDER BY id');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+    }
+});
+
+// 2. POST: Update Design
+app.post('/api/update-design', async (req, res) => {
+    const { id, name, img, smallPrice, largePrice } = req.body;
+    try {
+        const query = `
+            UPDATE designs 
+            SET name = $1, img = $2, smallPrice = $3, largePrice = $4 
+            WHERE id = $5;
+        `;
+        await pool.query(query, [name, img, smallPrice, largePrice, id]);
         res.json({ success: true });
     } catch (err) {
         console.error(err);
