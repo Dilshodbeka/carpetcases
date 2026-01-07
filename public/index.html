@@ -308,17 +308,12 @@
 
                 <!-- Designs Tab -->
                 <div id="tab-designs" class="hidden">
-                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h4>Add New Design</h4>
-                        <form onsubmit="addNewDesign(event)" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                            <input type="text" name="d_name" placeholder="Name" required style="flex: 1;">
-                            <input type="number" name="d_price" placeholder="Price/m²" required style="width: 120px;">
-                            <input type="text" name="d_img" placeholder="Image URL" required style="flex: 2;">
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </form>
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4>Manage Designs</h4>
+                        <small style="color:#666;">Click 'Edit' on a design below to change prices or image.</small>
                     </div>
                     <table class="data-table">
-                        <thead><tr><th>Preview</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Preview</th><th>Name</th><th>Prices</th><th>Action</th></tr></thead>
                         <tbody id="designs-table-body"></tbody>
                     </table>
                 </div>
@@ -343,6 +338,40 @@
             <h3>Notification Sent!</h3>
             <p style="margin-bottom: 20px;">Order status updated to Paid. Client notified via SMS and Telegram.</p>
             <button class="btn btn-primary" onclick="closeNotifModal()">Okay</button>
+        </div>
+    </div>
+    <!-- DESIGN EDIT MODAL -->
+    <div id="design-modal" class="notif-modal">
+        <div class="notif-content" style="text-align: left;">
+            <h3>Edit Design</h3>
+            <input type="hidden" id="edit-design-id">
+            
+            <label>Name</label>
+            <input type="text" id="edit-design-name">
+            
+            <label>Image URL</label>
+            <!-- Added a helper button to upload file -->
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="edit-design-img" placeholder="https://...">
+                <input type="file" id="upload-input" accept="image/*" style="padding:5px; width:140px;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 1;">
+                    <label>Small Price (< 6m²)</label>
+                    <input type="number" id="edit-design-price-small">
+                </div>
+                <div style="flex: 1;">
+                    <label>Large Price (≥ 6m²)</label>
+                    <input type="number" id="edit-design-price-large">
+                </div>
+            </div>
+            <small style="color:#666; display:block; margin-bottom:10px;">Example: 2x3 uses Small Price. 3x4 uses Large Price.</small>
+
+            <div style="text-align: right; margin-top: 10px;">
+                <button class="btn btn-outline" onclick="closeDesignModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveDesignChanges()">Save</button>
+            </div>
         </div>
     </div>
 
@@ -573,7 +602,64 @@
         if (pass === 'admin123') navigateTo('admin');
         else showToast("Wrong password");
     }
+        // --- MODAL FUNCTIONS (Add these) ---
 
+    function renderAdminDesigns() {
+        const tbody = document.getElementById('designs-table-body');
+        tbody.innerHTML = designs.map(d => `
+            <tr>
+                <td><img src="${d.img}" style="width:40px;height:40px;border-radius:4px;"></td>
+                <td>${d.name}<br><small>$${d.smallPrice} / $${d.largePrice}</small></td>
+                <td><button class="btn btn-primary" style="font-size:0.7rem" onclick="openDesignModal(${d.id})">Edit</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function openDesignModal(id) {
+        const d = designs.find(x => x.id === id);
+        document.getElementById('edit-design-id').value = d.id;
+        document.getElementById('edit-design-name').value = d.name;
+        document.getElementById('edit-design-img').value = d.img;
+        document.getElementById('edit-design-price-small').value = d.smallPrice;
+        document.getElementById('edit-design-price-large').value = d.largePrice;
+        document.getElementById('design-modal').style.display = 'flex';
+
+        // LOGIC TO HANDLE IMAGE UPLOAD
+        const fileInput = document.getElementById('upload-input');
+        fileInput.value = ""; // Clear previous selection
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    // Automatically paste the image code into the box
+                    document.getElementById('edit-design-img').value = event.target.result;
+                    showToast("Image converted! Click Save.");
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+    }
+
+    function saveDesignChanges() {
+        const id = parseInt(document.getElementById('edit-design-id').value);
+        const d = designs.find(x => x.id === id);
+        if (d) {
+            d.name = document.getElementById('edit-design-name').value;
+            d.img = document.getElementById('edit-design-img').value;
+            d.smallPrice = parseFloat(document.getElementById('edit-design-price-small').value);
+            d.largePrice = parseFloat(document.getElementById('edit-design-price-large').value);
+            
+            renderAdminDesigns();
+            renderDesigns(); // Update main gallery too
+            closeDesignModal();
+            showToast("Design Updated");
+        }
+    }
+
+    function closeDesignModal() {
+        document.getElementById('design-modal').style.display = 'none';
+    }
     // Init
     renderDesigns();
     renderCart();
