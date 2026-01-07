@@ -2,18 +2,19 @@ const express = require('express');
 const { Telegraf } = require('telegraf');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const path = require('path');
 
 // --- CONFIGURATION ---
 const PORT = process.env.PORT || 3000;
-// REPLACE WITH YOUR ACTUAL TOKEN
-const TOKEN = '8524797886:AAFel51fCM7KtJAz6KkRchDbJnzjy3uc1B8'; 
-// REPLACE WITH YOUR PERSONAL TELEGRAM ID (to receive admin alerts)
-// You can get this by messaging @userinfobot in Telegram
-const ADMIN_CHAT_ID = 7829091241;
 
+// Read from Environment Variables (defined in render.yaml)
+const TOKEN = process.env.BOT_TOKEN; 
+const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
+const DATABASE_URL = process.env.DATABASE_URL;
+
+// (Keep the rest of your server.js code the same below this...)
 const bot = new Telegraf(TOKEN);
 const app = express();
+// ... rest of code
 
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serves your HTML file
@@ -134,5 +135,4 @@ app.listen(PORT, () => {
 });
 
 // Start Telegram Bot Polling
-
-bot.launch();
+//bot.launch();
