@@ -18,7 +18,7 @@
         --gray-light: #E0E0E0;
         --success: #27ae60;
         --danger: #c0392b;
-        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow: 0 4px 6 -1px rgba(0, 0, 0, 0.1);
         --card-radius: 12px;
     }
 
@@ -32,7 +32,7 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        font-size: 16px; /* Better for mobile reading */
+        font-size: 16px;
     }
 
     h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--primary-dark); }
@@ -43,16 +43,15 @@
         font-weight: 700; transition: all 0.3s; font-size: 1rem;
         display: inline-block; text-align: center;
     }
-    .btn-primary { background: var(--primary); color: white; width: 100%; } /* Full width on mobile by default */
+    .btn-primary { background: var(--primary); color: white; width: 100%; }
     .btn-primary:hover { background: var(--primary-dark); }
     .btn-accent { background: var(--accent); color: var(--text-dark); }
     .btn-danger { background: var(--danger); color: white; padding: 8px 16px; font-size: 0.9rem; width: auto; }
     .btn-outline { border: 2px solid var(--primary); background: transparent; color: var(--primary); width: 100%; }
     
-    /* Touch Friendly Inputs */
     input, select, textarea {
         width: 100%; padding: 14px; border: 1px solid #ccc; border-radius: 8px;
-        font-size: 16px; margin-bottom: 12px; font-family: inherit; /* 16px prevents zoom on iOS */
+        font-size: 16px; margin-bottom: 12px; font-family: inherit;
     }
     input:focus { outline: 2px solid var(--accent); border-color: transparent; }
 
@@ -60,7 +59,7 @@
     .container { 
         max-width: 1200px; 
         margin: 0 auto; 
-        padding: 20px; /* Add padding so text doesn't touch screen edges */
+        padding: 20px; 
         flex: 1; 
     }
 
@@ -73,7 +72,7 @@
         justify-content: space-between; 
         align-items: center; 
         padding: 15px 20px; 
-        flex-wrap: wrap; /* Allows wrapping on small screens */
+        flex-wrap: wrap; 
         gap: 10px;
     }
     .logo { font-size: 1.2rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
@@ -85,10 +84,8 @@
     footer a { color: #555; text-decoration: none; font-size: 0.8rem; }
 
     /* --- VIEWS --- */
-    /* Responsive Layout: 2 Columns on Desktop, 1 on Mobile */
     .order-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; }
     
-    /* Responsive Design Gallery */
     .design-gallery { 
         display: grid; 
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
@@ -96,11 +93,9 @@
     }
     .design-card { background: white; border-radius: var(--card-radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
     .design-card:hover { transform: translateY(-3px); }
-    .design-card.selected { border-color: var(--accent); }
     .design-card img { width: 100%; height: 160px; object-fit: cover; }
     .design-info { padding: 12px; text-align: center; font-size: 0.9rem; font-weight: 700; }
 
-    /* Responsive Cart */
     .cart-item-row { 
         background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; 
         box-shadow: var(--shadow); 
@@ -112,33 +107,33 @@
     .cart-item-thumb { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; }
     .size-inputs { display: flex; gap: 10px; margin-top: 5px; }
 
-    /* Responsive Delivery */
     .delivery-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
     .delivery-card { background: white; border: 1px solid var(--gray-light); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; }
     .delivery-card.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
 
-    /* Payment & Admin */
     .payment-center, .login-box { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow); }
     .login-wrapper { display: flex; align-items: center; justify-content: center; height: 80vh; }
+    
+    /* Table Styles */
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--gray-light); }
+    .data-table th { background-color: #f9f9f9; }
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+    .badge-pending { background-color: #ffeeba; color: #856404; }
+    .badge-paid { background-color: #d4edda; color: #155724; }
+    .admin-tabs { display: flex; border-bottom: 2px solid var(--gray-light); margin-bottom: 20px; }
+    .tab-btn { padding: 10px 20px; cursor: pointer; font-weight: bold; color: #888; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-    /* --- MEDIA QUERIES (Mobile Optimization) --- */
+    /* --- MEDIA QUERIES --- */
     @media (max-width: 768px) {
-        .order-layout { display: block; } /* Stack gallery and form on mobile */
-        
+        .order-layout { display: block; }
         .nav-container { flex-direction: column; text-align: center; }
-        
-        .delivery-options { grid-template-columns: 1fr; } /* Delivery options stacked */
-        
-        /* Cart adjustments */
-        .cart-item-row { 
-            grid-template-columns: 1fr; /* Stack cart items on mobile */
-            text-align: center;
-        }
+        .delivery-options { grid-template-columns: 1fr; }
+        .cart-item-row { grid-template-columns: 1fr; text-align: center; }
         .cart-item-thumb { margin: 0 auto; }
         .size-inputs { justify-content: center; }
-        .btn-danger { margin-top: 10px; width: 100%; } /* Full width delete button */
-        
-        /* Admin Table Scroll */
+        .btn-danger { margin-top: 10px; width: 100%; }
         table { font-size: 0.8rem; }
     }
 
@@ -165,15 +160,16 @@
                 <ul>
                     <li><a onclick="navigateTo('home')" id="nav-home" class="active">Order New</a></li>
                     <li><a onclick="navigateTo('payment')" id="nav-payment">Pay Order</a></li>
-                    <!-- Admin link removed from public nav -->
                 </ul>
             </nav>
         </div>
     </header>
+
     <!-- Telegram Login Widget -->
-        <div id="telegram-login-widget" style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
-            <script async src="https://telegram.org/js/telegram-widget.js?23" data-telegram-login="adgilamchexolbot" data-size="large" data-radius="8" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
-        </div>
+    <div id="telegram-login-widget" style="text-align: center; margin-top: 20px; margin-bottom: 20px;">
+        <script async src="https://telegram.org/js/telegram-widget.js?23" data-telegram-login="adgilamchexolbot" data-size="large" data-radius="8" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+    </div>
+
     <main class="container">
 
         <!-- 1. HOME / ORDER PAGE -->
@@ -222,7 +218,6 @@
             </div>
         </section>
 
-
         <!-- 2. PAYMENT PAGE -->
         <section id="view-payment" class="hidden">
             <div class="payment-center">
@@ -231,13 +226,11 @@
                     <button class="payment-method-btn active" onclick="switchPaymentMethod('click')">CLICK</button>
                     <button class="payment-method-btn" onclick="switchPaymentMethod('card')">BANK CARD</button>
                 </div>
-
                 <form onsubmit="processPayment(event)">
                     <label>Order ID or Phone</label>
                     <input type="text" placeholder="e.g. 12345" required>
                     <label>Amount (UZS)</label>
                     <input type="number" placeholder="Amount" required>
-
                     <div id="ui-click">
                         <div class="sim-card">
                             <div class="sim-logo">CLICK</div>
@@ -258,7 +251,6 @@
             </div>
         </section>
 
-
         <!-- 3. ADMIN LOGIN PAGE -->
         <section id="view-login" class="hidden">
             <div class="login-wrapper">
@@ -273,15 +265,13 @@
             </div>
         </section>
 
-
         <!-- 4. ADMIN DASHBOARD -->
         <section id="view-admin" class="hidden">
-            <div class="admin-dashboard">
+            <div style="background: white; padding: 30px; border-radius: var(--card-radius); box-shadow: var(--shadow);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Admin Dashboard</h2>
                     <button class="btn btn-outline" onclick="logout()">Logout</button>
                 </div>
-
                 <div class="admin-tabs">
                     <div class="tab-btn active" onclick="switchAdminTab('orders', this)">Orders</div>
                     <div class="tab-btn" onclick="switchAdminTab('designs', this)">Designs</div>
@@ -319,10 +309,9 @@
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Hidden Link for Admin Login -->
+    <!-- Footer -->
     <footer>
         <p>&copy; 2023 Elite Carpet Uzbekistan. All rights reserved.</p>
         <a onclick="navigateTo('login')">Admin Login</a>
@@ -336,26 +325,23 @@
         <div class="notif-content">
             <span class="notif-icon">📩</span>
             <h3>Notification Sent!</h3>
-            <p style="margin-bottom: 20px;">Order status updated to Paid. Client notified via SMS and Telegram.</p>
+            <p style="margin-bottom: 20px;">Order status updated. Client notified via Telegram.</p>
             <button class="btn btn-primary" onclick="closeNotifModal()">Okay</button>
         </div>
     </div>
+
     <!-- DESIGN EDIT MODAL -->
     <div id="design-modal" class="notif-modal">
         <div class="notif-content" style="text-align: left;">
             <h3>Edit Design</h3>
             <input type="hidden" id="edit-design-id">
-            
             <label>Name</label>
             <input type="text" id="edit-design-name">
-            
             <label>Image URL</label>
-            <!-- Added a helper button to upload file -->
             <div style="display:flex; gap:10px;">
                 <input type="text" id="edit-design-img" placeholder="https://...">
                 <input type="file" id="upload-input" accept="image/*" style="padding:5px; width:140px;">
             </div>
-
             <div style="display: flex; gap: 10px;">
                 <div style="flex: 1;">
                     <label>Small Price (< 6m²)</label>
@@ -367,7 +353,6 @@
                 </div>
             </div>
             <small style="color:#666; display:block; margin-bottom:10px;">Example: 2x3 uses Small Price. 3x4 uses Large Price.</small>
-
             <div style="text-align: right; margin-top: 10px;">
                 <button class="btn btn-outline" onclick="closeDesignModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveDesignChanges()">Save</button>
@@ -376,293 +361,249 @@
     </div>
 
     <script>
-            // --- CONFIGURATION ---
-    // REPLACE 'YOUR_BOT_USERNAME' with your actual bot username (e.g., 'EliteCarpetBot')
-    const BOT_USERNAME = 'adgilamchexolbot'; 
-    let currentTelegramUser = null; // Stores logged in user info
-    let cart = [];
-    let selectedDelivery = null;
-    
-    // Local designs (You could also fetch this from server later)
-    const designs = [
-        { id: 1, name: "Oriental Classic", price: 50, img: "https://picsum.photos/seed/rug1/300/300" },
-        { id: 2, name: "Modern Geometric", price: 45, img: "https://picsum.photos/seed/rug2/300/300" },
-        { id: 3, name: "Persian Red", price: 60, img: "https://picsum.photos/seed/rug3/300/300" },
-        { id: 4, name: "Blue Silk", price: 85, img: "https://picsum.photos/seed/rug4/300/300" },
-    ];
-
-    // --- 1. TELEGRAM LOGIN CALLBACK ---
-    // This function runs automatically when the user clicks the Telegram button
-    function onTelegramAuth(user) {
-        currentTelegramUser = user;
-        document.getElementById('telegram-login-widget').style.display = 'none';
+        // --- CONFIGURATION ---
+        const BOT_USERNAME = 'adgilamchexolbot'; 
+        let currentTelegramUser = null; 
+        let cart = [];
+        let selectedDelivery = null;
         
-        // Show a welcome message in the UI (optional)
-        const header = document.querySelector('header .nav-container');
-        const userSpan = document.createElement('span');
-        userSpan.style.marginLeft = "20px";
-        userSpan.style.fontWeight = "bold";
-        userSpan.innerText = `Hi, ${user.first_name}`;
-        header.appendChild(userSpan);
+        // DESIGN DATA (Updated to support Small/Large pricing)
+        const designs = [
+            { id: 1, name: "Oriental Classic", img: "https://picsum.photos/seed/rug1/300/300", smallPrice: 50, largePrice: 45 },
+            { id: 2, name: "Modern Geometric", img: "https://picsum.photos/seed/rug2/300/300", smallPrice: 45, largePrice: 40 },
+            { id: 3, name: "Persian Red", img: "https://picsum.photos/seed/rug3/300/300", smallPrice: 60, largePrice: 55 },
+            { id: 4, name: "Blue Silk", img: "https://picsum.photos/seed/rug4/300/300", smallPrice: 85, largePrice: 80 },
+        ];
 
-        showToast(`Logged in as ${user.first_name}`);
-    }
-
-    // --- NAVIGATION (Keep mostly the same) ---
-    function navigateTo(page) {
-        document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-        document.getElementById(`view-${page}`).classList.remove('hidden');
-
-        if (page === 'admin') {
-            loadAdminOrdersFromServer(); // NEW: Fetch real orders
+        // --- 1. TELEGRAM LOGIN & AUTO-LOGIN ---
+        function onTelegramAuth(user) {
+            currentTelegramUser = user;
+            // Save to Local Storage
+            localStorage.setItem('carpet_bot_user', JSON.stringify(user));
+            
+            document.getElementById('telegram-login-widget').style.display = 'none';
+            loadUserUI(user);
+            showToast(`Logged in as ${user.first_name}`);
         }
-    }
 
-    // --- ORDER LOGIC (Keep mostly same) ---
-    function renderDesigns() { /* Keep your existing renderDesigns code */ 
-        const container = document.getElementById('design-gallery');
-        container.innerHTML = designs.map(d => `
-            <div class="design-card" onclick="selectDesign(${d.id})">
-                <img src="${d.img}" alt="${d.name}">
-                <div class="design-info">${d.name}<br><small>$${d.price}/m²</small></div>
-            </div>
-        `).join('');
-    }
-
-    function selectDesign(id) {
-        cart.push({ uid: Date.now(), designId: id, width: 2, height: 3 });
-        renderCart();
-    }
-
-    function renderCart() { /* Keep your existing renderCart code, but calculate total */
-        const container = document.getElementById('cart-container');
-        if (cart.length === 0) {
-            container.innerHTML = '<div style="text-align: center; padding: 30px; color: #888;">No items selected.</div>';
-            document.getElementById('total-price-display').innerText = "$0.00";
-            return;
+        function loadUserUI(user) {
+            if (document.getElementById('user-display-span')) {
+                document.getElementById('user-display-span').innerText = `Hi, ${user.first_name}`;
+                return;
+            }
+            const header = document.querySelector('header .nav-container');
+            const userSpan = document.createElement('span');
+            userSpan.id = 'user-display-span';
+            userSpan.style.marginLeft = "20px";
+            userSpan.style.fontWeight = "bold";
+            userSpan.innerText = `Hi, ${user.first_name}`;
+            header.appendChild(userSpan);
         }
-        let total = 0;
-        container.innerHTML = cart.map((item, index) => {
-            const d = designs.find(x => x.id === item.designId);
-            const price = item.width * item.height * d.price;
-            total += price;
-            return `
-                <div class="cart-item-row">
-                    <img src="${d.img}" class="cart-item-thumb">
-                    <div>
-                        <strong>${d.name}</strong>
-                        <div class="size-inputs">
-                            <input type="number" min="0.5" step="0.1" value="${item.width}" onchange="updateItem(${index}, 'w', this.value)"> x
-                            <input type="number" min="0.5" step="0.1" value="${item.height}" onchange="updateItem(${index}, 'h', this.value)">
+
+        function checkAutoLogin() {
+            const savedUser = localStorage.getItem('carpet_bot_user');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    currentTelegramUser = user;
+                    document.getElementById('telegram-login-widget').style.display = 'none';
+                    loadUserUI(user);
+                } catch (e) {
+                    localStorage.removeItem('carpet_bot_user');
+                }
+            }
+        }
+
+        // --- NAVIGATION ---
+        function navigateTo(page) {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`view-${page}`).classList.remove('hidden');
+            if (page === 'admin') loadAdminOrdersFromServer();
+        }
+        function switchPaymentMethod(m) {
+            document.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            if (m === 'click') { document.getElementById('ui-click').classList.remove('hidden'); document.getElementById('ui-card').classList.add('hidden'); }
+            else { document.getElementById('ui-click').classList.add('hidden'); document.getElementById('ui-card').classList.remove('hidden'); }
+        }
+        function processPayment(e) { e.preventDefault(); showToast("Processing..."); setTimeout(() => { showToast("Payment Successful!"); e.target.reset(); }, 1500); }
+        function checkLogin() { if (document.getElementById('admin-pass').value === 'admin123') navigateTo('admin'); else showToast("Wrong password"); }
+        function logout() { navigateTo('home'); }
+        function switchAdminTab(tab, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-orders').classList.add('hidden');
+            document.getElementById('tab-designs').classList.add('hidden');
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        }
+        function showToast(msg) {
+            const t = document.getElementById("toast"); t.innerText = msg; t.className = "show";
+            setTimeout(() => t.className = t.className.replace("show", ""), 3000);
+        }
+
+        // --- SHOPPING CART LOGIC (Tiers) ---
+        function renderDesigns() {
+            const container = document.getElementById('design-gallery');
+            container.innerHTML = designs.map(d => `
+                <div class="design-card" onclick="selectDesign(${d.id})">
+                    <img src="${d.img}" alt="${d.name}">
+                    <div class="design-info">${d.name}<br><small>From $${d.largePrice}/m²</small></div>
+                </div>
+            `).join('');
+        }
+
+        function selectDesign(id) {
+            cart.push({ uid: Date.now(), designId: id, width: 2, height: 3 });
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-container');
+            if (cart.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 30px; color: #888;">No items selected.</div>';
+                document.getElementById('total-price-display').innerText = "$0.00";
+                return;
+            }
+            let total = 0;
+            container.innerHTML = cart.map((item, index) => {
+                const d = designs.find(x => x.id === item.designId);
+                const area = item.width * item.height;
+                let pricePerUnit = (area < 6) ? d.smallPrice : d.largePrice;
+                let itemTotal = area * pricePerUnit;
+                total += itemTotal;
+
+                return `
+                    <div class="cart-item-row">
+                        <img src="${d.img}" class="cart-item-thumb">
+                        <div>
+                            <strong>${d.name}</strong>
+                            <div class="size-inputs">
+                                <input type="number" min="0.5" step="0.1" value="${item.width}" onchange="updateItem(${index}, 'w', this.value)"> x
+                                <input type="number" min="0.5" step="0.1" value="${item.height}" onchange="updateItem(${index}, 'h', this.value)">
+                            </div>
+                            <small>${area < 6 ? 'Small' : 'Large'} Size: $${itemTotal.toFixed(0)}</small>
                         </div>
-                        <small>$${price.toFixed(0)}</small>
-                    </div>
-                    <button class="btn btn-danger" onclick="removeItem(${index})">×</button>
-                </div>`;
-        }).join('');
-        document.getElementById('total-price-display').innerText = "$" + total.toFixed(2);
-    }
-
-    function updateItem(index, dim, val) {
-        if(dim === 'w') cart[index].width = parseFloat(val);
-        if(dim === 'h') cart[index].height = parseFloat(val);
-        renderCart();
-    }
-    function removeItem(index) { cart.splice(index, 1); renderCart(); }
-    function selectDelivery(type, el) {
-        selectedDelivery = type;
-        document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-    }
-
-    // --- SUBMIT ORDER (UPDATED) ---
-    async function submitOrder() {
-        // 1. Check Login
-        if (!currentTelegramUser) {
-            alert("Please log in using Telegram to order!");
-            window.scrollTo(0, 0);
-            document.getElementById('telegram-login-widget').style.border = "2px solid red";
-            return;
+                        <button class="btn btn-danger" onclick="removeItem(${index})">×</button>
+                    </div>`;
+            }).join('');
+            document.getElementById('total-price-display').innerText = "$" + total.toFixed(2);
         }
 
-        if (cart.length === 0) return showToast("Select items first.");
-        if (!selectedDelivery) return showToast("Select delivery.");
-        const address = document.getElementById('delivery-address').value;
-        if (!address) return showToast("Enter address.");
+        function updateItem(index, dim, val) {
+            if(dim === 'w') cart[index].width = parseFloat(val);
+            if(dim === 'h') cart[index].height = parseFloat(val);
+            renderCart();
+        }
+        function removeItem(index) { cart.splice(index, 1); renderCart(); }
+        function selectDelivery(type, el) {
+            selectedDelivery = type;
+            document.querySelectorAll('.delivery-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
 
-        const total = cart.reduce((sum, i) => {
-            const d = designs.find(x => x.id === i.designId);
-            return sum + (i.width * i.height * d.price);
-        }, 0);
+        async function submitOrder() {
+            if (!currentTelegramUser) { showToast("Please Log in via Telegram first."); return; }
+            if (cart.length === 0) return showToast("Select items first.");
+            if (!selectedDelivery) return showToast("Select delivery.");
+            const address = document.getElementById('delivery-address').value;
+            if (!address) return showToast("Enter address.");
 
-        const payload = {
-            cart: cart,
-            address: address,
-            total: total,
-            delivery: selectedDelivery,
-            telegramUser: currentTelegramUser // CRITICAL: Send user data to server
-        };
+            const total = cart.reduce((sum, i) => {
+                const d = designs.find(x => x.id === i.designId);
+                const area = i.width * i.height;
+                const price = (area < 6) ? d.smallPrice : d.largePrice;
+                return sum + (area * price);
+            }, 0);
 
-        try {
-            showToast("Sending Order...");
-            const response = await fetch('/api/order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            
-            if(data.success) {
-                cart = []; selectedDelivery = null;
-                document.getElementById('delivery-address').value = "";
-                renderCart();
-                showToast("Order Sent! Check your Telegram.");
-            } else {
-                showToast("Error sending order");
+            const payload = { cart, address, total, delivery: selectedDelivery, telegramUser: currentTelegramUser };
+            try {
+                showToast("Sending Order...");
+                const res = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) {
+                    cart = []; selectedDelivery = null; document.getElementById('delivery-address').value = ""; renderCart();
+                    showToast("Order Sent! Check Telegram.");
+                } else { showToast("Error sending order"); }
+            } catch (e) { console.error(e); showToast("Server Error"); }
+        }
+
+        // --- ADMIN & DESIGN LOGIC ---
+        async function loadAdminOrdersFromServer() {
+            try { const res = await fetch('/api/orders'); const orders = await res.json(); renderAdminOrders(orders); } catch (e) { console.error(e); }
+        }
+
+        function renderAdminOrders(orders) {
+            const tbody = document.getElementById('orders-table-body');
+            if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No orders yet.</td></tr>'; return; }
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td><strong>${o.user.first_name}</strong> (@${o.user.username || '-'})<br><small>${o.address}</small></td>
+                    <td>${o.delivery}</td>
+                    <td>$${o.total}</td>
+                    <td><span class="badge ${o.status === 'Pending' ? 'badge-pending' : 'badge-paid'}">${o.status}</span></td>
+                    <td>
+                        ${o.status === 'Pending' 
+                            ? `<button class="btn btn-primary" onclick="updateOrderStatus(${o.id}, 'Shipped')">Ship</button>` 
+                            : `<span style="color:#aaa; font-size:0.8rem">Completed</span>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function updateOrderStatus(id, status) {
+            const res = await fetch('/api/update-status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: id, status }) });
+            if((await res.json()).success) { loadAdminOrdersFromServer(); showToast(`Order marked as ${status}`); if(status === 'Shipped') showNotificationModal(); }
+        }
+
+        function renderAdminDesigns() {
+            const tbody = document.getElementById('designs-table-body');
+            tbody.innerHTML = designs.map(d => `
+                <tr>
+                    <td><img src="${d.img}" style="width:40px;height:40px;border-radius:4px;"></td>
+                    <td>${d.name}<br><small>$${d.smallPrice} / $${d.largePrice}</small></td>
+                    <td><button class="btn btn-primary" style="font-size:0.7rem" onclick="openDesignModal(${d.id})">Edit</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function openDesignModal(id) {
+            const d = designs.find(x => x.id === id);
+            document.getElementById('edit-design-id').value = d.id;
+            document.getElementById('edit-design-name').value = d.name;
+            document.getElementById('edit-design-img').value = d.img;
+            document.getElementById('edit-design-price-small').value = d.smallPrice;
+            document.getElementById('edit-design-price-large').value = d.largePrice;
+            document.getElementById('design-modal').style.display = 'flex';
+            const fileInput = document.getElementById('upload-input'); fileInput.value = "";
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0]; if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => { document.getElementById('edit-design-img').value = event.target.result; showToast("Image converted!"); };
+                    reader.readAsDataURL(file);
+                }
+            };
+        }
+
+        function saveDesignChanges() {
+            const id = parseInt(document.getElementById('edit-design-id').value);
+            const d = designs.find(x => x.id === id);
+            if (d) {
+                d.name = document.getElementById('edit-design-name').value;
+                d.img = document.getElementById('edit-design-img').value;
+                d.smallPrice = parseFloat(document.getElementById('edit-design-price-small').value);
+                d.largePrice = parseFloat(document.getElementById('edit-design-price-large').value);
+                renderAdminDesigns(); renderDesigns(); closeDesignModal(); showToast("Design Updated");
             }
-        } catch (error) {
-            console.error(error);
-            showToast("Server Error");
         }
-    }
 
-    // --- ADMIN LOGIC (UPDATED) ---
-    async function loadAdminOrdersFromServer() {
-        try {
-            const res = await fetch('/api/orders');
-            const orders = await res.json();
-            renderAdminOrders(orders);
-        } catch (e) {
-            console.error(e);
-        }
-    }
+        function closeDesignModal() { document.getElementById('design-modal').style.display = 'none'; }
+        function showNotificationModal() { document.getElementById('notif-modal').style.display = 'flex'; }
+        function closeNotifModal() { document.getElementById('notif-modal').style.display = 'none'; }
 
-    function renderAdminOrders(orders) {
-        const tbody = document.getElementById('orders-table-body');
-        if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No orders yet.</td></tr>'; return; }
-        
-        tbody.innerHTML = orders.map(o => `
-            <tr>
-                <td>#${o.id}</td>
-                <td>
-                    <strong>${o.user.first_name}</strong> (@${o.user.username || '-'})<br>
-                    <small>${o.address}</small>
-                </td>
-                <td>${o.delivery}</td>
-                <td>$${o.total}</td>
-                <td><span class="badge ${o.status === 'Pending' ? 'badge-pending' : 'badge-paid'}">${o.status}</span></td>
-                <td>
-                    ${o.status === 'Pending' 
-                        ? `<button class="btn btn-primary" onclick="updateOrderStatus(${o.id}, 'Paid')">Mark Paid</button>` 
-                        : `<button class="btn btn-outline" style="font-size:0.7rem" onclick="updateOrderStatus(${o.id}, 'Shipped')">Ship</button>`
-                    }
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    async function updateOrderStatus(id, status) {
-        try {
-            const res = await fetch('/api/update-status', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId: id, status: status })
-            });
-            const data = await res.json();
-            if(data.success) {
-                loadAdminOrdersFromServer(); // Refresh table
-                showToast(`Order marked as ${status}`);
-                // Simulate the visual notification modal
-                if(status === 'Paid') showNotificationModal(); 
-            }
-        } catch (e) {
-            showToast("Error updating status");
-        }
-    }
-
-    // Keep other helper functions (showToast, etc) as they were...
-    function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.innerText = msg;
-        t.className = "show";
-        setTimeout(() => t.className = t.className.replace("show", ""), 3000);
-    }
-
-    function showNotificationModal() {
-        document.getElementById('notif-modal').style.display = 'flex';
-    }
-    
-    function closeNotifModal() {
-        document.getElementById('notif-modal').style.display = 'none';
-    }
-    
-    // Keep Auth functions...
-    function checkLogin() {
-        const pass = document.getElementById('admin-pass').value;
-        if (pass === 'admin123') navigateTo('admin');
-        else showToast("Wrong password");
-    }
-        // --- MODAL FUNCTIONS (Add these) ---
-
-    function renderAdminDesigns() {
-        const tbody = document.getElementById('designs-table-body');
-        tbody.innerHTML = designs.map(d => `
-            <tr>
-                <td><img src="${d.img}" style="width:40px;height:40px;border-radius:4px;"></td>
-                <td>${d.name}<br><small>$${d.smallPrice} / $${d.largePrice}</small></td>
-                <td><button class="btn btn-primary" style="font-size:0.7rem" onclick="openDesignModal(${d.id})">Edit</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function openDesignModal(id) {
-        const d = designs.find(x => x.id === id);
-        document.getElementById('edit-design-id').value = d.id;
-        document.getElementById('edit-design-name').value = d.name;
-        document.getElementById('edit-design-img').value = d.img;
-        document.getElementById('edit-design-price-small').value = d.smallPrice;
-        document.getElementById('edit-design-price-large').value = d.largePrice;
-        document.getElementById('design-modal').style.display = 'flex';
-
-        // LOGIC TO HANDLE IMAGE UPLOAD
-        const fileInput = document.getElementById('upload-input');
-        fileInput.value = ""; // Clear previous selection
-        fileInput.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    // Automatically paste the image code into the box
-                    document.getElementById('edit-design-img').value = event.target.result;
-                    showToast("Image converted! Click Save.");
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-    }
-
-    function saveDesignChanges() {
-        const id = parseInt(document.getElementById('edit-design-id').value);
-        const d = designs.find(x => x.id === id);
-        if (d) {
-            d.name = document.getElementById('edit-design-name').value;
-            d.img = document.getElementById('edit-design-img').value;
-            d.smallPrice = parseFloat(document.getElementById('edit-design-price-small').value);
-            d.largePrice = parseFloat(document.getElementById('edit-design-price-large').value);
-            
-            renderAdminDesigns();
-            renderDesigns(); // Update main gallery too
-            closeDesignModal();
-            showToast("Design Updated");
-        }
-    }
-
-    function closeDesignModal() {
-        document.getElementById('design-modal').style.display = 'none';
-    }
-    // Init
-    renderDesigns();
-    renderCart();
+        // Init
+        renderDesigns(); renderCart(); renderAdminDesigns(); checkAutoLogin();
     </script>
 </body>
 </html>
